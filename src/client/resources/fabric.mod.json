@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "attributes",
+  "version": "0.0.1",
+  "name": "Attributes",
+  "description": "Cheapest attribute upgrade",
+  "authors": [
+    "camcamsatnav"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "camcam.attributes.client.AttributesClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.15.11",
+    "minecraft": "~1.21",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
