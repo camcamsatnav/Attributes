@@ -121,7 +121,7 @@ public class AttributesClient implements ClientModInitializer {
         List<ShardData> lowest = this.shardQueue.getLowest();
         for (int i = 0; i < lowest.size(); i++) {
             ShardData shard = lowest.get(i);
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %f", shard.id(), shard.count(), shard.unitPrice() * shard.count()), 2, 2 + 30 * i, 0xFF0000FF, true);
+            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %f", shard.id(), shard.count(), shard.unitPrice() * shard.count()), 2, 2 + 16 * i, 0xFF0000FF, true);
         }
     }
 }
