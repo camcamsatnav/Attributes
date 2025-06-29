@@ -3,20 +3,12 @@ package camcam.attributes.client.util;
 import camcam.attributes.client.AttributesClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import org.w3c.dom.Attr;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Scanner;
-
-import static camcam.attributes.client.AttributesClient.LOGGER;
 
 public class Bazaar {
     private static final String url = "https://api.hypixel.net/skyblock/bazaar";

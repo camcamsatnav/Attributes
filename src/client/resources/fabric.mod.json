@@ -16,12 +16,16 @@
   "entrypoints": {
     "client": [
       "camcam.attributes.client.AttributesClient"
+    ],
+    "modmenu": [
+      "camcam.attributes.client.config.AttributeConfigModMenu"
     ]
   },
   "depends": {
     "fabricloader": ">=0.15.11",
     "minecraft": "~1.21",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "cloth-config2": ">18"
   }
 }

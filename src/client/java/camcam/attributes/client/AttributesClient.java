@@ -1,9 +1,14 @@
 package camcam.attributes.client;
 
+import camcam.attributes.client.config.AttributeConfig;
 import camcam.attributes.client.util.Bazaar;
+import camcam.attributes.client.util.Format;
 import camcam.attributes.client.util.ShardData;
 import camcam.attributes.client.util.ShardPriorityQueue;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
@@ -15,7 +20,10 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +44,8 @@ public class AttributesClient implements ClientModInitializer {
 
     private final ShardPriorityQueue shardQueue;
 
+    public static AttributeConfig CONFIG;
+
     public AttributesClient() {
         bazaar = new Bazaar();
         this.shardQueue = new ShardPriorityQueue();
@@ -44,6 +54,9 @@ public class AttributesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         LOGGER.info("Attributes Initialized");
+
+        AutoConfig.register(AttributeConfig.class, GsonConfigSerializer::new);
+        AttributesClient.CONFIG = AutoConfig.getConfigHolder(AttributeConfig.class).getConfig();
 
         HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, SHARD_LAYER, this::render));
 
@@ -82,17 +95,15 @@ public class AttributesClient implements ClientModInitializer {
                     return;
                 }
 
-                String shardId = "SHARD_" + shard.substring(0, shard.length() - 6).toUpperCase().replace(" ", "_");
-
                 if (count == -1) {
                     // case where u just upgrade to lvl 10, needs to be removed
-                    this.shardQueue.remove(new ShardData(shardId, 0, 0));
+                    this.shardQueue.remove(new ShardData(Format.shardToBzID(shard), 0, 0));
                     continue;
                 }
-                double price = this.bazaar.getPrice(shardId);
+                double price = this.bazaar.getPrice(Format.shardToBzID(shard));
                 if (price == -1) continue;
 
-                this.shardQueue.add(new ShardData(shardId, count, price));
+                this.shardQueue.add(new ShardData(Format.shardToBzID(shard), count, price));
 
 //                ShardData lowest = this.priceCache.first();
 //                LOGGER.info(lowest.id() + "*" + lowest.count() + ":" + lowest.count() * lowest.unitPrice());
@@ -118,10 +129,11 @@ public class AttributesClient implements ClientModInitializer {
         });
     }
     public void render(DrawContext drawContext, RenderTickCounter counter) {
+        if (!AttributesClient.CONFIG.mainToggle) return;
         List<ShardData> lowest = this.shardQueue.getLowest();
         for (int i = 0; i < lowest.size(); i++) {
             ShardData shard = lowest.get(i);
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %f", shard.id(), shard.count(), shard.unitPrice() * shard.count()), 2, 2 + 16 * i, 0xFF0000FF, true);
+            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %s", Format.BzIDToShard(shard.id()), shard.count(), Format.formatPrice(shard.unitPrice() * shard.count())), 2, 2 + 16 * i, 0xFF0000FF, true);
         }
     }
 }
