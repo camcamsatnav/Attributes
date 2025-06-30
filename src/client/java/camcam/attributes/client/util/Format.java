@@ -5,7 +5,7 @@ public class Format {
         return "SHARD_" + shard.substring(0, shard.length() - 6).toUpperCase().replace(" ", "_");
     }
 
-    public static String BzIDToShard(String id) {
+    public static String bzIDToShard(String id) {
         return id.replace("SHARD_", "").replace("_", " ");
     }
 
