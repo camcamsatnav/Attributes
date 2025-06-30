@@ -6,7 +6,7 @@ public class Format {
     }
 
     public static String BzIDToShard(String id) {
-        return id.replace("SHARD_", "");
+        return id.replace("SHARD_", "").replace("_", " ");
     }
 
     public static String formatPrice(double price) {
