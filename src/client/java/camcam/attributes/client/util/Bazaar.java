@@ -41,6 +41,13 @@ public class Bazaar {
     public double getPrice(String name) {
         if (data == null) return -1;
 
+        // thanks hypixel
+        if (name.equals("SHARD_ABYSSAL_LANTERNFISH")) {
+            name = "SHARD_ABYSSAL_LANTERN";
+        } else if (name.equals("SHARD_CINDERBAT")) {
+            name = "SHARD_CINDER_BAT";
+        }
+
         BazaarData.Product product = data.products().get(name);
         if (product == null) {
             AttributesClient.LOGGER.warn("Item doesn't exist in bazaar data: {}", name);
