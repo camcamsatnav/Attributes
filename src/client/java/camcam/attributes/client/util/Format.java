@@ -11,7 +11,7 @@ public class Format {
 
     public static String formatPrice(double price) {
         if (price > 1e6) {
-            return Math.round(price / 1e7) + "m";
+            return Math.round(price / 1e6) + "m";
         } else if (price > 1e3) {
             return Math.round(price / 1e3) + "k";
         } else {
