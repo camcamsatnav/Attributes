@@ -1,5 +1,6 @@
 package camcam.attributes.client;
 
+import camcam.attributes.client.commands.ConfigCommand;
 import camcam.attributes.client.config.AttributeConfig;
 import camcam.attributes.client.util.Bazaar;
 import camcam.attributes.client.util.Format;
@@ -8,6 +9,7 @@ import camcam.attributes.client.util.ShardPriorityQueue;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
@@ -56,6 +58,8 @@ public class AttributesClient implements ClientModInitializer {
 
         HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, SHARD_LAYER, this::render));
 
+        ClientCommandRegistrationCallback.EVENT.register(ConfigCommand::register);
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
             if (!(client.currentScreen instanceof GenericContainerScreen)) return;
@@ -80,7 +84,7 @@ public class AttributesClient implements ClientModInitializer {
                     }
 
                     if (count == -1) {
-                        if (component.getString().startsWith("Syphon ")){
+                        if (component.getString().startsWith("Syphon ")) {
                             count = Integer.parseInt(component.getString().split(" ")[1]);
                         }
                     }
@@ -124,12 +128,13 @@ public class AttributesClient implements ClientModInitializer {
 
         });
     }
+
     public void render(DrawContext drawContext, RenderTickCounter counter) {
         if (!AttributesClient.CONFIG.mainToggle) return;
         List<ShardData> lowest = this.shardQueue.getLowest();
         for (int i = 0; i < lowest.size(); i++) {
             ShardData shard = lowest.get(i);
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %s", Format.bzIDToShard(shard.id()), shard.count(), Format.formatPrice(shard.unitPrice() * shard.count())), 2, 2 + 16 * i, 0xFF0000FF, true);
+            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %s", Format.bzIDToShard(shard.id()), shard.count(), Format.formatPrice(shard.unitPrice() * shard.count())), 2, 2 + 16 * i, AttributesClient.CONFIG.overlayColour, true);
         }
     }
 }

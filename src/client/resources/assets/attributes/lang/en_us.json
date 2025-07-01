@@ -1,0 +1,8 @@
+{
+  "text.autoconfig.attributes.title": "Attributes Config",
+  "text.autoconfig.attributes.category.general": "General",
+  "text.autoconfig.attributes.option.mainToggle": "Attribute overlay toggle",
+  "text.autoconfig.attributes.option.mainToggle.@Tooltip": "Toggles overlay showing 5 cheapest upgrades by insta-buying from bz",
+  "text.autoconfig.attributes.option.overlayColour": "Attribute overlay text colour",
+  "text.autoconfig.attributes.option.overlayColour.@Tooltip": "Change the text colour of the overlay, ARGB format"
+}
