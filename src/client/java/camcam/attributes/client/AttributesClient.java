@@ -104,11 +104,7 @@ public class AttributesClient implements ClientModInitializer {
                 if (price == -1) continue;
 
                 this.shardQueue.add(new ShardData(Format.shardToBzID(shard), count, price));
-
-//                ShardData lowest = this.priceCache.first();
-//                LOGGER.info(lowest.id() + "*" + lowest.count() + ":" + lowest.count() * lowest.unitPrice());
-
-                /**
+                /*
                  * lore lines
                  * 0 -> type (eg Foraging)
                  * 1 -> empty
@@ -125,7 +121,6 @@ public class AttributesClient implements ClientModInitializer {
                  * 12 -> Right-Click to toggle!
                  */
             }
-
         });
     }
 

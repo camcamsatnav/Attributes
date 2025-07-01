@@ -1,7 +1,5 @@
 package camcam.attributes.client.util;
 
-import camcam.attributes.client.AttributesClient;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
