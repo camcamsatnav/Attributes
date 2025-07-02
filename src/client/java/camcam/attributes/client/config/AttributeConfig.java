@@ -11,8 +11,24 @@ public class AttributeConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public boolean mainToggle = false;
 
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public int numberOfShards = 5;
+
     @ConfigEntry.ColorPicker(allowAlpha = true)
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip
     public int overlayColour = 0xFFFFFF00;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean showCountToMax = false;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean sortByMax = false;
+
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean showTotalCost = false;
 }

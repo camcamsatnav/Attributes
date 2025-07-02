@@ -1,10 +1,9 @@
 package camcam.attributes.client.features;
 
 import camcam.attributes.client.AttributesClient;
-import camcam.attributes.client.util.Bazaar;
-import camcam.attributes.client.util.Format;
-import camcam.attributes.client.util.ShardData;
-import camcam.attributes.client.util.ShardPriorityQueue;
+import camcam.attributes.client.util.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
@@ -14,7 +13,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,11 +26,14 @@ public class CheapestAttribute {
 
     private final Bazaar bazaar;
 
-    private final ShardPriorityQueue shardQueue;
+    private Map<String, Map<Integer, Integer>> attributeLevels;
+
+    private final Set<Shard> shardSet;
 
     public CheapestAttribute() {
         bazaar = new Bazaar();
-        this.shardQueue = new ShardPriorityQueue();
+        this.shardSet = new HashSet<>();
+        this.getAttributeLevels();
     }
 
     public void onTick(MinecraftClient client) {
@@ -43,12 +48,27 @@ public class CheapestAttribute {
             if (loreComponent == null || loreComponent.lines().size() < 10) continue;
 
             String shard = null;
+            String rarity = null;
+            int level = 0;
             int count = -1;
+
             for (Text component : loreComponent.lines()) {
                 if (shard == null) {
                     Matcher shardMatcher = SHARD_PATTERN.matcher(component.getString());
                     if (shardMatcher.find()) {
                         shard = shardMatcher.group(1);
+                    }
+                }
+
+                if (rarity == null) {
+                    if (component.getString().startsWith("Rarity: ")) {
+                        rarity = component.getString().split(" ")[1];
+                    }
+                }
+
+                if (level == 0) {
+                    if (component.getString().startsWith("Level: ")) {
+                        level = Integer.parseInt(component.getString().split(" ")[1]);
                     }
                 }
 
@@ -64,15 +84,27 @@ public class CheapestAttribute {
                 return;
             }
 
+            if (rarity == null) {
+                AttributesClient.LOGGER.warn("Shard rarity not found");
+                return;
+            }
+
             if (count == -1) {
                 // case where u just upgrade to lvl 10, needs to be removed
-                this.shardQueue.remove(new ShardData(Format.shardToBzID(shard), 0, 0));
+                this.shardSet.remove(new Shard(Format.shardToBzID(shard), 0, 0, 0));
                 continue;
             }
+
+            int countMax = this.attributeLevels.get(rarity).get(10) - (this.attributeLevels.get(rarity).get(level + 1) - count);
+
             double price = this.bazaar.getPrice(Format.shardToBzID(shard));
+
             if (price == -1) continue;
 
-            this.shardQueue.add(new ShardData(Format.shardToBzID(shard), count, price));
+            // update the set to contain latest shard information
+            this.shardSet.remove(new Shard(Format.shardToBzID(shard), 0, 0, 0));
+
+            this.shardSet.add(new Shard(Format.shardToBzID(shard), count, price, countMax));
             /*
              * lore lines
              * 0 -> type (eg Foraging)
@@ -94,10 +126,36 @@ public class CheapestAttribute {
 
     public void render(DrawContext drawContext) {
         if (!AttributesClient.CONFIG.mainToggle) return;
-        List<ShardData> lowest = this.shardQueue.getLowest();
-        for (int i = 0; i < lowest.size(); i++) {
-            ShardData shard = lowest.get(i);
-            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("%s x %d for %s", Format.bzIDToShard(shard.id()), shard.count(), Format.formatPrice(shard.unitPrice() * shard.count())), 2, 2 + 16 * i, AttributesClient.CONFIG.overlayColour, true);
+
+        List<Shard> shards = this.shardSet.stream().sorted(Comparator.comparingDouble(s -> (AttributesClient.CONFIG.sortByMax ? s.countMax() : s.count()) * s.unitPrice())).toList();
+
+        for (int i = 0; i < Math.min(AttributesClient.CONFIG.numberOfShards, shards.size()); i++) {
+            Shard shard = shards.get(i);
+            drawContext.drawText(MinecraftClient.getInstance().textRenderer,
+                    String.format("%s x %d for %s. %s", Format.bzIDToShard(shard.id()), shard.count(), Format.formatPrice(shard.unitPrice() * shard.count()),
+                            AttributesClient.CONFIG.showCountToMax ? String.format("%s to max (%d)", Format.formatPrice(shard.unitPrice() * shard.countMax()), shard.countMax()) : ""),
+                    2, 2 + 16 * i, AttributesClient.CONFIG.overlayColour, true);
+        }
+        if (AttributesClient.CONFIG.showTotalCost && !this.shardSet.isEmpty()) {
+            double totalCost = this.shardSet.stream().mapToDouble(s -> s.countMax() * s.unitPrice()).sum();
+            drawContext.drawText(MinecraftClient.getInstance().textRenderer, String.format("Total cost: %s", Format.formatPrice(totalCost)), 2, 2 + 16 * (AttributesClient.CONFIG.numberOfShards + 1), AttributesClient.CONFIG.overlayColour, true);
+        }
+    }
+
+    public void getAttributeLevels() {
+        Gson gson = new GsonBuilder().create();
+        try (Reader reader = new InputStreamReader(Objects.requireNonNull(CheapestAttribute.class.getClassLoader().getResourceAsStream("assets/attributes/data/attributeLevels.json")))) {
+            AttributeLevels parsed = gson.fromJson(reader, AttributeLevels.class);
+
+            this.attributeLevels = Map.of(
+                    "COMMON", parsed.COMMON(),
+                    "UNCOMMON", parsed.UNCOMMON(),
+                    "RARE", parsed.RARE(),
+                    "EPIC", parsed.EPIC(),
+                    "LEGENDARY", parsed.LEGENDARY()
+            );
+        } catch (IOException ignored) {
+            AttributesClient.LOGGER.error("Error loading attribute levels");
         }
     }
 }

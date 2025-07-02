@@ -3,13 +3,13 @@ package camcam.attributes.client.util;
 import java.util.Objects;
 
 
-public record ShardData(String id, int count, double unitPrice) {
+public record Shard(String id, int count, double unitPrice, int countMax) {
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (this.getClass() != obj.getClass()) return false;
-        ShardData other = (ShardData) obj;
+        Shard other = (Shard) obj;
         return this.id().equals(other.id());
     }
 

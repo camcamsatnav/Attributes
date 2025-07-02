@@ -2,7 +2,15 @@
   "text.autoconfig.attributes.title": "Attributes Config",
   "text.autoconfig.attributes.category.general": "General",
   "text.autoconfig.attributes.option.mainToggle": "Attribute overlay toggle",
-  "text.autoconfig.attributes.option.mainToggle.@Tooltip": "Toggles overlay showing 5 cheapest upgrades by insta-buying from bz",
+  "text.autoconfig.attributes.option.mainToggle.@Tooltip": "Toggles overlay showing cheapest upgrades by insta-buying from bz",
+  "text.autoconfig.attributes.option.numberOfShards": "Number of shards to display",
+  "text.autoconfig.attributes.option.numberOfShards.@Tooltip": "Number of shards to display on the overlay",
   "text.autoconfig.attributes.option.overlayColour": "Attribute overlay text colour",
-  "text.autoconfig.attributes.option.overlayColour.@Tooltip": "Change the text colour of the overlay, ARGB format"
+  "text.autoconfig.attributes.option.overlayColour.@Tooltip": "Change the text colour of the overlay, ARGB format",
+  "text.autoconfig.attributes.option.showCountToMax": "Show shard info to max",
+  "text.autoconfig.attributes.option.showCountToMax.@Tooltip": "Displays the number of shards required to max and cost",
+  "text.autoconfig.attributes.option.sortByMax": "Sort by cost to max",
+  "text.autoconfig.attributes.option.sortByMax.@Tooltip": "Changes display order to show cheapest shard to max rather than cheapest xp",
+  "text.autoconfig.attributes.option.showTotalCost": "Show the total cost",
+  "text.autoconfig.attributes.option.showTotalCost.@Tooltip": "Display the total cost to max attribute menu (probably way too much)"
 }
