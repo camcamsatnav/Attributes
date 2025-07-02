@@ -1,16 +1,12 @@
 {
   "schemaVersion": 1,
   "id": "attributes",
-  "version": "0.0.1",
+  "version": "${version}",
   "name": "Attributes",
   "description": "Cheapest attribute upgrade",
   "authors": [
     "camcamsatnav"
   ],
-  "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
-  },
   "license": "CC0-1.0",
   "environment": "*",
   "entrypoints": {
