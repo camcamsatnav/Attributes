@@ -15,6 +15,10 @@ public class AttributeConfig implements ConfigData {
     @ConfigEntry.Gui.Tooltip
     public int numberOfShards = 5;
 
+    @ConfigEntry.Category("general")
+    @ConfigEntry.Gui.Tooltip
+    public boolean useBuyOrder = false;
+
     @ConfigEntry.ColorPicker(allowAlpha = true)
     @ConfigEntry.Category("general")
     @ConfigEntry.Gui.Tooltip

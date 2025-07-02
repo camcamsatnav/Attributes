@@ -53,8 +53,7 @@ public class Bazaar {
             AttributesClient.LOGGER.warn("Item doesn't exist in bazaar data: {}", name);
             return -1;
         }
-
-        return product.quick_status().buyPrice();
+        return AttributesClient.CONFIG.useBuyOrder ? product.quick_status().sellPrice() : product.quick_status().buyPrice();
     }
 }
 
